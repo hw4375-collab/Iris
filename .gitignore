@@ -1,0 +1,22 @@
+# Lean / Lake build products
+.lake/
+*.olean
+*.ilean
+
+# Editor and operating-system metadata
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Temporary files
+*.tmp
+tmp/
+.tmp/

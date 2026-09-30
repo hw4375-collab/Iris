@@ -1,0 +1,6 @@
+name = "LeanArabic"
+version = "0.1.0"
+defaultTargets = ["LeanArabic"]
+
+[[lean_lib]]
+name = "LeanArabic"
