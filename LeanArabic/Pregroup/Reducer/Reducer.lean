@@ -219,6 +219,7 @@ def contractPair? {Atom : Type} [DecidableEq Atom]
 
 
 
+
 /-
 Context lifting on the left.
 
@@ -1106,7 +1107,7 @@ and we have:
 with :
     [target].toTy = target.toTy
 we finally got:
-  expr.toTy ⊢ target.toTy
+  expr.toTy ⊢ target
 -/
 
 

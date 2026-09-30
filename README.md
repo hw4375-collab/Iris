@@ -52,10 +52,16 @@ FlatExpr → reduceOnce → normalize → checkTarget → Lean-checked Deriv cer
 ```
 
 Current limitations are deliberate: P0 supports only flat atomic types with first-order
-adjoints and exact contractions; partial-order/subtyping relations, natural-language
-compilation, a frozen lexicon, lexical ambiguity search, and Arabic gender/number/person
-refinement are not implemented. The verifier establishes formal validity relative to the
-chosen representation; it does not itself establish linguistic faithfulness.
+adjoints and exact contractions. A benchmark-level basic relation witness exists, but
+partial-order/subtyping relations are not connected to the automatic reducer; a frozen
+lexicon, lexical ambiguity search, and Arabic gender/number/person refinement are not
+implemented. The verifier establishes formal validity relative to the chosen representation;
+it does not itself establish linguistic faithfulness.
+
+## Research checkpoints
+
+See [CHANGELOG.md](CHANGELOG.md) for the research-oriented development history,
+including the current dataset-aware basic morphism interface and its boundaries.
 
 ## Build
 

@@ -109,7 +109,46 @@ inductive Deriv {Atom : Type} : Ty Atom → Ty Atom → Type where
 infix:50 " ⊢  " => Deriv
 
 
+inductive DerivR {Atom : Type}
+    (Base : Atom → Atom → Type) :
+    Ty Atom → Ty Atom → Type where
 
+  | atomStep {a b : Atom} :
+      Base a b →
+      DerivR Base (Ty.atom a) (Ty.atom b)
+
+  | refl (X : Ty Atom) :
+      DerivR Base X X
+
+  | mono {X Y U V : Ty Atom} :
+    DerivR Base X Y →
+    DerivR Base U V →
+    DerivR Base (X * U) (Y * V)
+
+  | leftContract {X : Ty Atom} :
+        DerivR Base (Xˡ * X) 𝟙
+
+  | trans {X Y Z : Ty Atom} :
+      DerivR Base X Y →
+      DerivR Base Y Z →
+      DerivR Base X Z
+
+
+
+def leftContractFromBase
+    {Atom : Type}
+    {Base : Atom → Atom → Type}
+    {a b : Atom}
+    (h : Base b a) :
+    DerivR Base
+      ((Ty.atom a)ˡ * Ty.atom b)
+      𝟙 :=
+  DerivR.trans
+    (DerivR.mono
+      (DerivR.refl ((Ty.atom a)ˡ))
+      (DerivR.atomStep h))
+    DerivR.leftContract
+    
 
 def Derivable {Atom : Type} (X Y : Ty Atom) : Prop :=
   Nonempty (Deriv X Y)

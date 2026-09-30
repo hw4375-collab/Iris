@@ -27,5 +27,31 @@ def lookup : String → Option (FlatExpr Atom)
         .plain .s₁
       ]
 
+  | "sleep" =>
+      some [
+        .plain .i
+      ]
+
+  | "sees" =>
+      some [
+        .right .π₃,
+        .plain .s₁,
+        .left .o
+      ]
+
+  | "him" =>
+      some [
+        .plain .o
+      ]
+
+
+  | "may" =>
+      some [
+        .right .π₃,
+        .plain .s₁,
+        .left .j
+      ]
+
+
   | _ =>
       none
