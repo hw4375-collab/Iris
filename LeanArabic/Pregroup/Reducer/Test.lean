@@ -159,5 +159,8 @@ example :
   rfl
 
 
-  
+
+
+
+
 end LeanArabic.Pregroup.Reducer

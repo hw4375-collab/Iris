@@ -20,3 +20,6 @@
 *.tmp
 tmp/
 .tmp/
+
+# Private local research notes
+local_research/

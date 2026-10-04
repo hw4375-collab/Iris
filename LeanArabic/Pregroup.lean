@@ -133,6 +133,9 @@ inductive DerivR {Atom : Type}
       DerivR Base Y Z →
       DerivR Base X Z
 
+  | rightContract {X : Ty Atom} :
+      DerivR Base (X * Xʳ) 𝟙
+
 
 
 def leftContractFromBase
@@ -148,7 +151,22 @@ def leftContractFromBase
       (DerivR.refl ((Ty.atom a)ˡ))
       (DerivR.atomStep h))
     DerivR.leftContract
+
+def rightContractFromBase
+    {Atom : Type}
+    {Base : Atom → Atom → Type}
+    {a b : Atom}
+    (h : Base a b) :
+    DerivR Base
+      (Ty.atom a * (Ty.atom b)ʳ)
+      𝟙 :=
+  DerivR.trans
+    (DerivR.mono
+      (DerivR.atomStep h)
+      (DerivR.refl ((Ty.atom b)ʳ)))
+    DerivR.rightContract
     
+
 
 def Derivable {Atom : Type} (X Y : Ty Atom) : Prop :=
   Nonempty (Deriv X Y)

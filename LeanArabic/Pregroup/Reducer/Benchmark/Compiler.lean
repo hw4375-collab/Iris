@@ -1,6 +1,6 @@
 import LeanArabic.Pregroup.Reducer.Benchmark.Lexicon
 import LeanArabic.Pregroup.Reducer.Reducer
-
+import LeanArabic.Pregroup.Reducer.Benchmark.BasicOrder
  namespace LeanArabic.Pregroup.Benchmark
 
  open Reducer
@@ -45,8 +45,24 @@ def checkSentence
   | none =>
       none
 
+def checkSentenceR
+    (sentence : String)
+    (target : SignedAtom Atom) :
+    Option Bool :=
+  match compileSentence sentence with
+  | some expr =>
+      some (checkTargetR lookupBasic expr target)
+  | none =>
+      none
 
 
 #eval checkSentence "She sleeps" (.plain .s₁)
 
 #eval checkSentence "sleeps She" (.plain .s₁)
+
+
+
+#eval checkSentenceR "She may sleep" (.plain .s₁)
+
+
+#eval checkSentenceR "She may sleep" (.plain .s₁)

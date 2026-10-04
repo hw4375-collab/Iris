@@ -47,6 +47,8 @@ and eventually:
 
 
 import LeanArabic.Pregroup.Reducer.Types
+import LeanArabic.Pregroup
+
 
 namespace LeanArabic.Pregroup.Reducer
 
@@ -143,6 +145,11 @@ def reduceOnce {Atom : Type} [DecidableEq Atom] :
 
 
 
+
+
+
+
+
 /-
 E₁ → E₂ → E₃ → ...
 until
@@ -164,7 +171,6 @@ def normalizeAux {Atom : Type} [DecidableEq Atom] :
 def normalize {Atom : Type} [DecidableEq Atom]
     (expr : FlatExpr Atom) : FlatExpr Atom :=
   normalizeAux expr.length expr
-
 
 
 
@@ -219,7 +225,93 @@ def contractPair? {Atom : Type} [DecidableEq Atom]
 
 
 
+def contractPairR?
+    {Atom : Type}
+    {Base : Atom → Atom → Type}
+    (lookupBase : (a b : Atom) → Option (Base a b))
+    (x y : SignedAtom Atom) :
+    Option (DerivR Base (x.toTy * y.toTy) 𝟙) :=
+  match x, y with
 
+  | .plain a, .right b =>
+      match lookupBase a b with
+      | some h =>
+          some (rightContractFromBase h)
+      | none =>
+          none
+
+  | .left a, .plain b =>
+      match lookupBase b a with
+      | some h =>
+          some (leftContractFromBase h)
+      | none =>
+          none
+
+  | _, _ =>
+      none
+
+
+
+def reduceOnceR
+    {Atom : Type}
+    {Base : Atom → Atom → Type}
+    (lookupBase : (a b : Atom) → Option (Base a b)) :
+    FlatExpr Atom → Option (FlatExpr Atom)
+
+  | [] =>
+      none
+
+  | [_] =>
+      none
+
+  | x :: y :: rest =>
+      match contractPairR? lookupBase x y with
+      | some _ =>
+          some rest
+
+      | none =>
+          match reduceOnceR lookupBase (y :: rest) with
+          | some reducedTail =>
+              some (x :: reducedTail)
+          | none =>
+              none
+
+
+def normalizeAuxR
+    {Atom : Type}
+    {Base : Atom → Atom → Type}
+    (lookupBase : (a b : Atom) → Option (Base a b)) :
+    Nat → FlatExpr Atom → FlatExpr Atom
+
+  | 0, expr =>
+      expr
+
+  | n + 1, expr =>
+      match reduceOnceR lookupBase expr with
+      | none =>
+          expr
+      | some next =>
+          normalizeAuxR lookupBase n next
+
+
+def normalizeR
+    {Atom : Type}
+    {Base : Atom → Atom → Type}
+    (lookupBase : (a b : Atom) → Option (Base a b))
+    (expr : FlatExpr Atom) :
+    FlatExpr Atom :=
+  normalizeAuxR lookupBase expr.length expr
+
+
+def checkTargetR
+    {Atom : Type}
+    [DecidableEq Atom]
+    {Base : Atom → Atom → Type}
+    (lookupBase : (a b : Atom) → Option (Base a b))
+    (expr : FlatExpr Atom)
+    (target : SignedAtom Atom) :
+    Bool :=
+  normalizeR lookupBase expr == [target]
 /-
 Context lifting on the left.
 
@@ -1128,6 +1220,71 @@ noncomputable def checkTarget_sound
     normalize_sound expr
 
   simpa [hNorm] using hDeriv
+
+
+
+
+
+
+/-
+Search all possible reducation
+-/
+
+
+def reduceAllR
+    {Atom : Type}
+    {Base : Atom → Atom → Type}
+    (lookupBase : (a b : Atom) → Option (Base a b)) :
+    FlatExpr Atom → List (FlatExpr Atom)
+
+  | [] =>
+      []
+
+  | [_] =>
+      []
+
+  | x :: y :: rest =>
+      let tailResults :=
+        (reduceAllR lookupBase (y :: rest)).map (fun ys => x :: ys)
+
+      match contractPairR? lookupBase x y with
+      | some _ =>
+          rest :: tailResults
+      | none =>
+          tailResults
+
+
+
+def reachesTargetR
+    {Atom : Type}
+    [DecidableEq Atom]
+    {Base : Atom → Atom → Type}
+    (lookupBase : (a b : Atom) → Option (Base a b))
+    (fuel : Nat)
+    (expr : FlatExpr Atom)
+    (target : SignedAtom Atom) : Bool :=
+  if expr == [target] then
+    true
+  else
+    match fuel with
+    | 0 =>
+        false
+    | n + 1 =>
+        (reduceAllR lookupBase expr).any
+          (fun next => reachesTargetR lookupBase n next target)
+
+
+def checkTargetSearchR
+    {Atom : Type}
+    [DecidableEq Atom]
+    {Base : Atom → Atom → Type}
+    (lookupBase : (a b : Atom) → Option (Base a b))
+    (expr : FlatExpr Atom)
+    (target : SignedAtom Atom) : Bool :=
+  reachesTargetR lookupBase expr.length expr target
+
+
+
 
 
 end LeanArabic.Pregroup.Reducer

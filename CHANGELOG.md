@@ -3,6 +3,50 @@
 This changelog records research checkpoints, representation boundaries, and
 verified capabilities. It is not a generic software release history.
 
+## 2026-10-04 — Dataset 1 verifier and branching proof-search checkpoint
+
+### What changed
+
+- Continued the generic relation-aware Pregroup derivation layer.
+- Added dataset-supplied basic morphism witnesses and relation-aware pair
+  contraction.
+- Added branching reduction and exhaustive finite proof search.
+- Extended Dataset 1 benchmark infrastructure for controlled natural-language
+  compilation, reduction, and target checking.
+
+### What was demonstrated
+
+- Exact-contraction cases work.
+- Basic-order-assisted derivations work, including the dataset witness `i ≤ j`.
+- A greedy reducer can produce false negatives.
+- Exhaustive proof search can recover valid derivations.
+- Controlled natural-language benchmark sentences can be compiled into
+  `FlatExpr` values and checked.
+
+### Important research observation
+
+Formal derivability, proof-search strategy, and representation faithfulness
+are distinct questions. Some published lexical assignments require further
+investigation; no unsupported relation has been silently added merely to make
+an example pass.
+
+### Not yet proved
+
+The branching-search layer does not yet have a whole-search soundness theorem
+of the form:
+
+```text
+checkTargetSearchR = true
+    → DerivR Base expr.toTy target.toTy
+```
+
+Local contractions are proof-producing, but the current search procedure
+returns states and discards the full proof path.
+
+### Next step
+
+Dataset 2: Arabic agreement representation-faithfulness pilot.
+
 ## 2026-09-30 — Dataset-aware basic morphism interface
 
 ### Natural-language benchmark interface
